@@ -48,7 +48,9 @@ docker-compose up --build
 ```
 
 3. Acceder:
+
 Frontend: http://localhost:3000
+
 Backend: http://localhost:5000
 
 🔐 Endpoints Clave
@@ -84,6 +86,7 @@ Mensajes de error descriptivos
 
 Loading states
 
+
 🛠️ Desarrollo Local
 
 Frontend:
@@ -103,6 +106,7 @@ npm run dev
 ```
 
 
+
 📝 Próximas Mejoras
 Autenticación con Google OAuth
 
@@ -111,6 +115,7 @@ Panel de administración
 Recuperación de contraseña
 
 Tests E2E con Cypress
+
 
 
 📬 Contribuciones
@@ -127,5 +132,7 @@ Haz push a la rama (git push origin feature/nueva-funcionalidad)
 Abre un Pull Request
 
 
+
 📌 Nota: Requiere Node.js 18+ y PostgreSQL 12+.
+
 🔧 ¿Problemas? Revisa issues
