@@ -1,102 +1,115 @@
-# Compra-Venta App
+# 🛒 Compra-Venta App - Sistema de Autenticación
+![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react)
+![Node.js](https://img.shields.io/badge/Node.js-16+-339933?logo=node.js)
+![JWT](https://img.shields.io/badge/JWT-Authentication-000000?logo=json-web-tokens)
 
-## Descripción
+## 📌 Descripción
+Sistema completo de autenticación con registro, login y rutas protegidas.  
+**Características principales**:
+- Registro seguro con validación
+- Login persistente con JWT
+- Dashboard protegido
+- Gestión de usuarios aprobados/no aprobados
 
-Aplicación web para gestionar usuarios con autenticación (registro, login, logout) y rutas protegidas.  
-Construida con React en el frontend y Node.js/Express en el backend (autenticación con JWT).
+## 🚀 Tecnologías
+| Frontend               | Backend              |
+|------------------------|----------------------|
+| React 19               | Node.js 18           |
+| React Router 6         | Express 4            |
+| Context API            | JWT Authentication  |
+| CSS Modules           | PostgreSQL           |
 
----
+## 🏗️ Estructura del Proyecto
+compra-venta-app/
+├── client/ # Frontend React
+│ ├── src/
+│ │ ├── components/ # Componentes reutilizables
+│ │ ├── context/ # Gestión de autenticación
+│ │ └── ...
+├── server/ # Backend Node.js
+│ ├── controllers/
+│ ├── routes/
+│ └── ...
+└── docker-compose.yml # Entorno Docker
 
-## Tecnologías usadas
-
-- Frontend: React 19, React Router DOM 6  
-- Backend: Node.js, Express, JWT  
-- Gestión de estado y contexto para autenticación  
-- Fetch API para comunicación cliente-servidor
-
----
-
-## Estructura del proyecto (cliente)
-
-```
-src/
-├── components/
-│   ├── Dashboard.jsx
-│   ├── Login.jsx
-│   ├── PrivateRoute.jsx
-│   └── Register.jsx
-├── context/
-│   └── AuthContext.jsx
-├── App.js
-├── index.js
-├── App.css
-└── index.css
-```
-
----
-
-## Instalación y ejecución
-
-1. Clonar repositorio
-
+## ⚡ Instalación Rápida
+1. Clonar y configurar:
 ```bash
-git clone <url-del-repo>
-cd compra-venta-app/client
-```
+git clone https://github.com/tu-usuario/compra-venta-app.git
+cd compra-venta-app
+cp .env.example .env  # Configurar variables
+Iniciar con Docker:
 
-2. Instalar dependencias
+bash
+docker-compose up --build
+Acceder:
 
-```bash
+Frontend: http://localhost:3000
+
+Backend: http://localhost:5000
+
+🔐 Endpoints Clave
+Método	Endpoint	Descripción
+POST	/api/auth/register	Registro de nuevos usuarios
+POST	/api/auth/login	Autenticación JWT
+GET	/api/auth/verify	Validación de token
+🌟 Funcionalidades Destacadas
+✅ Sistema de Aprobación:
+
+Usuarios nuevos van a /welcome hasta ser aprobados
+
+Integración con lista de emails permitidos
+
+✅ Seguridad Mejorada:
+
+Tokens JWT con expiración
+
+Contraseñas hasheadas con bcrypt
+
+Protección contra CSRF
+
+✅ Experiencia de Usuario:
+
+Redirecciones inteligentes
+
+Mensajes de error descriptivos
+
+Loading states
+
+🛠️ Desarrollo Local
+Frontend:
+
+bash
+cd client
 npm install
-```
-
-3. Ejecutar servidor de desarrollo
-
-```bash
 npm start
-```
+Backend:
 
-4. Abrir en navegador en `http://localhost:3000`
+bash
+cd server
+npm install
+npm run dev
+📝 Próximas Mejoras
+Autenticación con Google OAuth
 
----
+Panel de administración
 
-## Funcionalidades
+Recuperación de contraseña
 
-- Registro de usuarios (email, usuario y contraseña)  
-- Inicio de sesión con JWT  
-- Rutas privadas protegidas (Dashboard)  
-- Logout y gestión de token en contexto y localStorage  
-- Navegación entre Login y Registro  
-- Mensajes de error y confirmación
+Tests E2E con Cypress
 
----
+📬 Contribuciones
+¡Todas las contribuciones son bienvenidas! Por favor:
 
-## API Endpoints (backend)
+Haz fork del proyecto
 
-- `POST /api/auth/register` - Registro  
-- `POST /api/auth/login` - Login  
-- (Asegúrate de tener el backend corriendo en `http://localhost:5000`)
+Crea una rama (git checkout -b feature/nueva-funcionalidad)
 
----
+Haz commit de tus cambios (git commit -am 'Add some feature')
 
-## Cómo funciona la autenticación
+Haz push a la rama (git push origin feature/nueva-funcionalidad)
 
-- Al iniciar sesión, el token JWT se guarda en contexto React y localStorage  
-- El contexto proporciona funciones `login`, `logout` y el estado `isLoggedIn`  
-- Las rutas privadas usan un componente `PrivateRoute` para proteger contenido  
-- Si el usuario no está autenticado, se redirige al login
+Abre un Pull Request
 
----
-
-## Próximos pasos
-
-- Añadir autenticación con Google  
-- Implementar timeout de sesión en Dashboard  
-- Mejorar estilos y UX
-
----
-
-## Notas
-
-Este proyecto es una base para ampliar funcionalidades y experimentar con autenticación React+Node.  
-Para cualquier duda o contribución, abrir issue o PR.
+📌 Nota: Requiere Node.js 18+ y PostgreSQL 12+.
+🔧 ¿Problemas? Revisa issues
