@@ -40,14 +40,15 @@ compra-venta-app/
 git clone https://github.com/tu-usuario/compra-venta-app.git
 cd compra-venta-app
 cp .env.example .env  # Configurar variables
+```
+
 Iniciar con Docker:
-
-bash
+```bash
 docker-compose up --build
+```
+
 Acceder:
-
 Frontend: http://localhost:3000
-
 Backend: http://localhost:5000
 
 🔐 Endpoints Clave
@@ -81,16 +82,20 @@ Loading states
 🛠️ Desarrollo Local
 Frontend:
 
-bash
+```bash
 cd client
 npm install
 npm start
+```
+
 Backend:
 
-bash
+```bash
 cd server
 npm install
 npm run dev
+```
+
 📝 Próximas Mejoras
 Autenticación con Google OAuth
 
