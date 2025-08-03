@@ -61,6 +61,7 @@ Backend: http://localhost:5000
 
 
 🌟 Funcionalidades Destacadas
+
 ✅ Sistema de Aprobación:
 
 Usuarios nuevos van a /welcome hasta ser aprobados
