@@ -85,6 +85,7 @@ Mensajes de error descriptivos
 Loading states
 
 🛠️ Desarrollo Local
+
 Frontend:
 
 ```bash
@@ -101,6 +102,7 @@ npm install
 npm run dev
 ```
 
+
 📝 Próximas Mejoras
 Autenticación con Google OAuth
 
@@ -109,6 +111,7 @@ Panel de administración
 Recuperación de contraseña
 
 Tests E2E con Cypress
+
 
 📬 Contribuciones
 ¡Todas las contribuciones son bienvenidas! Por favor:
@@ -122,6 +125,7 @@ Haz commit de tus cambios (git commit -am 'Add some feature')
 Haz push a la rama (git push origin feature/nueva-funcionalidad)
 
 Abre un Pull Request
+
 
 📌 Nota: Requiere Node.js 18+ y PostgreSQL 12+.
 🔧 ¿Problemas? Revisa issues
