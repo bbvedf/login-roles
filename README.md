@@ -20,6 +20,7 @@ Sistema completo de autenticación con registro, login y rutas protegidas.
 | CSS Modules           | PostgreSQL           |
 
 ## 🏗️ Estructura del Proyecto
+```
 compra-venta-app/
 ├── client/ # Frontend React
 │ ├── src/
@@ -31,6 +32,7 @@ compra-venta-app/
 │ ├── routes/
 │ └── ...
 └── docker-compose.yml # Entorno Docker
+```
 
 ## ⚡ Instalación Rápida
 1. Clonar y configurar:
