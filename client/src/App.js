@@ -1,20 +1,28 @@
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import { AuthContext } from './context/AuthContext';
 import Login from './components/Login';
+import WelcomePage from './components/WelcomePage';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 
 function App() {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { user, isLoggedIn } = useContext(AuthContext);
 
   return (
     <Routes>
+      <Route
+        path="/welcome"
+        element={
+          !isLoggedIn ? <Navigate to="/login" /> :
+            (user?.isApproved ? <Navigate to="/dashboard" /> : <WelcomePage />)
+        }
+      />
       <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/dashboard" />} />
       <Route path="/register" element={!isLoggedIn ? <Register /> : <Navigate to="/dashboard" />} />
       <Route path="/dashboard" element={
-        <PrivateRoute>
+        <PrivateRoute allowedRoles={['approved']}>
           <Dashboard />
         </PrivateRoute>
       } />
@@ -25,3 +33,5 @@ function App() {
 }
 
 export default App;
+
+

@@ -1,13 +1,19 @@
 import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import styles from './Register.module.css';
 
 const API_URL = 'http://localhost:5000/api/auth';
 
 function Register() {
   const { login } = useContext(AuthContext);
-  const [form, setForm] = useState({ username: '', email: '', password: '' });
-  const [message, setMessage] = useState('');
+  const navigate = useNavigate();
+  const [form, setForm] = useState({
+    username: '',
+    email: '',
+    password: ''
+  });
+  const [message, setMessage] = useState({ text: '', isError: false });
 
   const handleChange = e => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -15,76 +21,94 @@ function Register() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setMessage('');
+    setMessage({ text: '', isError: false });
 
     try {
       const res = await fetch(`${API_URL}/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          username: form.username,
-          email: form.email,
-          password: form.password,
-        }),
+        body: JSON.stringify(form),
       });
 
       const data = await res.json();
 
-      if (res.ok) {
-        login(data.token);
-        setMessage(`¡Registro exitoso! Token: ${data.token.substring(0, 20)}...`);
-      } else {
-        setMessage(data.msg || 'Error en registro');
+      if (!res.ok) {
+        throw new Error(data.message || data.msg || 'Error en el registro');
       }
+
+      // Registro exitoso
+      login(data.token, data.user);
+
+      setMessage({
+        text: '¡Registro exitoso! Redirigiendo...',
+        isError: false
+      });
+
+      // Redirige según aprobación
+      setTimeout(() => {
+        navigate(data.user.isApproved ? '/dashboard' : '/welcome', {
+          state: { email: data.user.email }
+        });
+      }, 1500);
+
     } catch (error) {
-      setMessage('Error de conexión');
+      setMessage({
+        text: error.message.includes('Failed to fetch')
+          ? 'Error de conexión con el servidor'
+          : error.message,
+        isError: true
+      });
+      console.error('Error en registro:', error);
     }
   };
 
   return (
-    <div style={{ maxWidth: 400, margin: 'auto', padding: 20 }}>
-      <h2>Registro</h2>
+    <div className={styles.container}>
+      <h2 className={styles.title}>Registro</h2>
       <form onSubmit={handleSubmit}>
         <input
           type="text"
           name="username"
           placeholder="Usuario"
+          className={styles.input}
           value={form.username}
           onChange={handleChange}
           required
-          style={{ width: '100%', marginBottom: 10 }}
+          minLength={3}
         />
         <input
           type="email"
           name="email"
           placeholder="Email"
+          className={styles.input}
           value={form.email}
           onChange={handleChange}
           required
-          style={{ width: '100%', marginBottom: 10 }}
         />
         <input
           type="password"
           name="password"
           placeholder="Contraseña"
+          className={styles.input}
           value={form.password}
           onChange={handleChange}
           required
-          style={{ width: '100%', marginBottom: 10 }}
+          minLength={6}
         />
-        <button type="submit" style={{ width: '100%', padding: 10 }}>
+        <button type="submit" className={styles.button}>
           Registrar
         </button>
       </form>
 
-      {message && <div style={{ marginTop: 10, color: 'red' }}>{message}</div>}
+      {message.text && (
+        <div className={message.isError ? styles.error : styles.success}>
+          {message.text}
+        </div>
+      )}
 
-      <p style={{ marginTop: 20 }}>
-        ¿Ya tienes cuenta?{' '}
-        <Link to="/login" style={{ color: 'blue', textDecoration: 'underline' }}>
-          Inicia sesión aquí
-        </Link>
-      </p>
+      <Link to="/login" className={styles.link}>
+        ¿Ya tienes cuenta? Inicia sesión aquí
+      </Link>
     </div>
   );
 }

@@ -1,79 +1,135 @@
-import React, { useState, useContext } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
+import { GoogleLogin } from '@react-oauth/google';
+import styles from './Login.module.css';
 
-const API_URL = 'http://localhost:5000/api/auth';
-
-function Login() {
+const Login = () => {
   const { login } = useContext(AuthContext);
   const [form, setForm] = useState({ email: '', password: '' });
-  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleChange = e => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setForm(prev => ({ ...prev, [name]: value }));
   };
+  
+const handleResponse = (data) => {
+  login(data.token, data.user); // Guarda en el contexto/auth
+  if (data.user.isApproved) {
+    navigate('/dashboard'); // Usuario aprobado
+  } else {
+    navigate('/welcome', { state: { email: data.user.email } });
+  }
+};
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setMessage('');
 
-    try {
-      const res = await fetch(`${API_URL}/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: form.email, password: form.password }),
-      });
+const handleError = (err) => {
+  try {
+    const errorData = JSON.parse(err.message);
+    setError(errorData.message || 'Error desconocido');
+  } catch {
+    setError(err.message || 'Error de conexión');
+  }
+};
 
-      const data = await res.json();
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+  setError('');
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(form)
+    });
 
-      if (res.ok) {
-        login(data.token);
-        setMessage(`¡Éxito! Token: ${data.token.substring(0, 20)}...`);
-      } else {
-        setMessage(data.msg || 'Error en login');
-      }
-    } catch (error) {
-      setMessage('Error de conexión');
+    const data = await response.json();
+    console.log("Respuesta del backend:", data);
+    if (!response.ok) {
+      throw new Error(JSON.stringify(data));
     }
-  };
+
+    handleResponse(data);
+  } catch (err) {
+    handleError(err);
+  }
+};
+
+  const handleGoogleSuccess = async (credentialResponse) => {
+  try {
+    const response = await fetch('http://localhost:5000/api/auth/google-login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ credential: credentialResponse.credential })
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(JSON.stringify(data));
+    }
+
+    handleResponse(data);
+  } catch (err) {
+    handleError(err);
+  }
+};
 
   return (
-    <div style={{ maxWidth: 400, margin: 'auto', padding: 20 }}>
-      <h2>Iniciar sesión</h2>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="email"
-          name="email"
-          placeholder="Email"
-          value={form.email}
-          onChange={handleChange}
-          required
-          style={{ width: '100%', marginBottom: 10 }}
-        />
-        <input
-          type="password"
-          name="password"
-          placeholder="Contraseña"
-          value={form.password}
-          onChange={handleChange}
-          required
-          style={{ width: '100%', marginBottom: 10 }}
-        />
-        <button type="submit" style={{ width: '100%', padding: 10 }}>
-          Entrar
-        </button>
-      </form>
+    <div className={styles.container}>
+      <div className={styles.form}>
+        <h2>Iniciar Sesión</h2>
 
-      {message && <div style={{ marginTop: 10, color: 'red' }}>{message}</div>}
+        <form onSubmit={handleSubmit}>
+          <div className={styles.inputGroup}>
+            <label htmlFor="email">Correo</label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              className={styles.input}
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-      <p style={{ marginTop: 20 }}>
-        ¿No tienes cuenta?{' '}
-        <Link to="/register" style={{ color: 'blue', textDecoration: 'underline' }}>
-          Regístrate aquí
-        </Link>
-      </p>
+          <div className={styles.inputGroup}>
+            <label htmlFor="password">Contraseña</label>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              className={styles.input}
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
+
+          <button type="submit" className={styles.button}>
+            Entrar
+          </button>
+        </form>
+
+        {error && <p className={styles.error}>{error}</p>}
+
+        <div className={styles.separator}>
+          <span>o continúa con</span>
+        </div>
+
+        <GoogleLogin
+          onSuccess={handleGoogleSuccess}
+          onError={() => setError('Error al iniciar con Google')}
+        />
+
+        <p className={styles.footer}>
+          ¿No tienes cuenta? <a href="/register">Regístrate</a>
+        </p>
+      </div>
     </div>
   );
-}
+};
 
 export default Login;
