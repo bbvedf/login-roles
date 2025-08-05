@@ -1,13 +1,16 @@
+// client/src/components/WelcomePage.jsx
 import { useLocation } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext'; // Importa el contexto de autenticación
+import { useAuth } from '../context/AuthContext';
 import styles from './WelcomePage.module.css';
 
 export default function WelcomePage() {
   const location = useLocation();
-  const { logout } = useAuth(); // Obtiene la función logout del contexto
-  const email = location.state?.email || 'tu correo';
+  const { logout, user } = useAuth(); // <-- Añade user del contexto
+  
+  // Prefiere el email del contexto (si existe) sobre el location.state
+  const email = user?.email || location.state?.email || 'tu correo';
 
-  return (
+    return (
     <div className={styles.container}>
       <h1>¡Registro Completado!</h1>
       <p className={styles.message}>

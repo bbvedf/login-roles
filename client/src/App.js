@@ -7,18 +7,13 @@ import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
 
+
 function App() {
   const { user, isLoggedIn } = useContext(AuthContext);
 
   return (
     <Routes>
-      <Route
-        path="/welcome"
-        element={
-          !isLoggedIn ? <Navigate to="/login" /> :
-            (user?.isApproved ? <Navigate to="/dashboard" /> : <WelcomePage />)
-        }
-      />
+      <Route path="/welcome" element={<WelcomePage />} />
       <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/dashboard" />} />
       <Route path="/register" element={!isLoggedIn ? <Register /> : <Navigate to="/dashboard" />} />
       <Route path="/dashboard" element={

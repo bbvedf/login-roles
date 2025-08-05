@@ -1,12 +1,11 @@
-import React, { useState, useContext } from 'react';
+
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { AuthContext } from '../context/AuthContext';
 import styles from './Register.module.css';
 
 const API_URL = 'http://localhost:5000/api/auth';
 
 function Register() {
-  const { login } = useContext(AuthContext);
   const navigate = useNavigate();
   const [form, setForm] = useState({
     username: '',
@@ -33,23 +32,22 @@ function Register() {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || data.msg || 'Error en el registro');
+        throw new Error(data.message || 'Error en el registro');
       }
 
-      // Registro exitoso
-      login(data.token, data.user);
-
+      // Registro exitoso - Redirigir directamente a Welcome
       setMessage({
         text: '¡Registro exitoso! Redirigiendo...',
         isError: false
       });
 
-      // Redirige según aprobación
-      setTimeout(() => {
-        navigate(data.user.isApproved ? '/dashboard' : '/welcome', {
-          state: { email: data.user.email }
-        });
-      }, 1500);
+      navigate('/welcome', {
+        state: { 
+          email: data.email || form.email,
+          username: data.username || form.username
+        },
+        replace: true
+      });
 
     } catch (error) {
       setMessage({
@@ -58,14 +56,14 @@ function Register() {
           : error.message,
         isError: true
       });
-      console.error('Error en registro:', error);
     }
   };
 
   return (
     <div className={styles.container}>
-      <h2 className={styles.title}>Registro</h2>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className={styles.form}>
+      <h2>Registro</h2>
+
         <input
           type="text"
           name="username"

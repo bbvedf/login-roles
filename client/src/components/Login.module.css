@@ -67,3 +67,10 @@
 .separator::after {
   margin-left: 1rem;
 }
+
+.error {
+  color: #ff4444;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+  text-align: center;
+}

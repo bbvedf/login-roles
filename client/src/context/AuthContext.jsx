@@ -1,7 +1,16 @@
-import React, { createContext, useContext , useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-export const AuthContext = createContext();
+// 1. Añade error al contexto
+export const AuthContext = createContext({
+  user: null,
+  isLoggedIn: false,
+  loading: true,
+  error: null,         // Nuevo estado para errores
+  setError: () => { },  // Función para actualizar errores
+  login: () => { },
+  logout: () => { },
+});
 
 export const useAuth = () => {
   const context = useContext(AuthContext);
@@ -13,8 +22,9 @@ export const useAuth = () => {
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // ¡Nuevo estado!
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null); // 2. Estado para errores
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -34,7 +44,6 @@ export const AuthProvider = ({ children }) => {
           const { user } = await response.json();
           setUser(user);
           setIsLoggedIn(true);
-          // Añade esta condición para redirigir según isApproved:
           if (user?.isApproved) {
             navigate('/dashboard');
           } else {
@@ -44,43 +53,79 @@ export const AuthProvider = ({ children }) => {
           localStorage.removeItem('token');
         }
       } catch (error) {
-        console.error("Auth verification failed:", error);
+        setError("Error al verificar autenticación"); // 3. Manejo de errores
       } finally {
         setLoading(false);
       }
     };
 
     verifyAuth();
-  }, [navigate]); // Añade navigate como dependencia
+  }, [navigate]);
 
+  const login = async (email, password) => {
+    try {
+      const response = await fetch('http://localhost:5000/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-  const login = async (token, userData) => {
-    localStorage.setItem('token', token);
-    setUser(userData);
-    setIsLoggedIn(true); // ¡Añade esto!
+      const data = await response.json();
+
+      if (!response.ok) {
+        if (response.status === 403 && data.requiresApproval) {
+          // Redirige PRIMERO antes de hacer return
+          navigate('/welcome', {
+            state: { email: data.email || email },
+            replace: true
+          });
+          return { requiresApproval: true }; // Return especial
+        }
+        throw new Error(data.error || 'Error en login');
+      }
+
+      localStorage.setItem('token', data.token);
+      setUser(data.user);
+      navigate(data.user.isApproved ? '/dashboard' : '/welcome');
+      return data;
+
+    } catch (error) {
+      console.error('Login error:', error);
+      throw error;
+    }
   };
 
   const logout = async () => {
+    const token = localStorage.getItem('token');
+
     try {
-      await fetch('http://localhost:5000/api/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        }
-      });
+      if (token) {
+        await fetch('http://localhost:5000/api/auth/logout', {
+          method: 'POST',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+      }
+    } catch (error) {
+      console.warn('Logout falló (pero continuamos):', error);
     } finally {
       localStorage.removeItem('token');
       setUser(null);
-      setIsLoggedIn(false); // ¡Añade esto!
+      setIsLoggedIn(false);
+      setError(null);
       navigate('/login');
     }
   };
 
+
   return (
     <AuthContext.Provider value={{
       user,
-      isLoggedIn, // ¡Expón este valor!
+      isLoggedIn,
       loading,
+      error,      // 7. Expón el estado de error
+      setError,   // 8. Expón la función para actualizarlo
       login,
       logout
     }}>

@@ -1,42 +1,48 @@
+//server/middleware/authMiddleware.js
 const jwt = require('jsonwebtoken');
 const pool = require('../db');
 
 exports.verifyToken = async (req, res, next) => {
-    const token = req.headers.authorization?.split(' ')[1];
-    if (!token) return res.status(401).json({ error: 'Token requerido' });
+    const authHeader = req.headers.authorization;
+
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+        return res.status(401).json({ error: 'Token requerido' });
+    }
+
+    const token = authHeader.split(' ')[1];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Token requerido' });
+    }
+    
+    console.log('Token recibido:', token);
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        // 1. Verificar el token JWT
+        const decoded = jwt.verify(token, process.env.JWT_SECRET); // ¡Esta línea era la faltante!
 
-        // Verificamos datos básicos del usuario
+        // 2. Verificar que el usuario existe y está aprobado
         const user = await pool.query(
             `SELECT 
-        id, 
-        email, 
-        is_approved AS "isApproved"
-       FROM users WHERE id = $1`,
-            [decoded.userId]
+                id, 
+                email, 
+                is_approved AS "isApproved",
+                role 
+             FROM users 
+             WHERE id = $1`,
+            [decoded.userId] // ¡Ahora decoded sí está definido!
         );
 
-        if (user.rows.length === 0) {
-            return res.status(401).json({ error: 'Usuario no existe' });
+        if (user.rows.length === 0 || !user.rows[0].isApproved) {
+            return res.status(401).json({ error: 'Usuario no aprobado o no existe' });
         }
 
-        // Obtenemos el role (si existe)
-        const approvedEmail = await pool.query(
-            'SELECT role FROM approved_emails WHERE email = $1',
-            [decoded.email]
-        );
-
-        req.user = {
-            ...decoded,
-            role: approvedEmail.rows[0]?.role || 'user'  // Role por defecto
-        };
-
+        // 3. Adjuntar datos del usuario al request
+        req.user = user.rows[0];
         next();
     } catch (err) {
         console.error('Error en verifyToken:', err);
-        res.status(403).json({ error: 'Token inválido' });
+        res.status(403).json({ error: 'Token inválido o expirado' });
     }
 };
 
@@ -60,6 +66,11 @@ exports.checkApproved = async (req, res, next) => {
 };
 
 exports.isAdmin = async (req, res, next) => {
-    // Implementación opcional si luego necesitas admins
+    if (req.user?.role !== 'admin') {
+        return res.status(403).json({
+            error: 'forbidden',
+            message: 'Se requieren privilegios de administrador'
+        });
+    }
     next();
 };
