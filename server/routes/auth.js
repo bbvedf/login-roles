@@ -143,4 +143,56 @@ router.post('/logout', verifyToken, (req, res) => {
 router.post('/google', authController.googleLogin);
 
 
+// Recuperación de contraseña (placeholder)
+router.post('/reset-password', async (req, res) => {
+  const { email } = req.body;
+
+  try {
+    // Simulación: buscar usuario
+    const user = await pool.query('SELECT * FROM users WHERE email = $1', [email]);
+
+    if (user.rows.length === 0) {
+      return res.status(404).json({ error: 'Usuario no encontrado' });
+    }
+
+    // Simulación: generar token
+    const resetToken = jwt.sign(
+      { userId: user.rows[0].id },
+      process.env.JWT_SECRET,
+      { expiresIn: '15m' }
+    );
+
+    // Simular envío por email (por ahora solo mostrar en consola)
+    console.log(`Enlace de recuperación para ${email}: http://localhost:3000/new-password/${resetToken}`);
+
+    res.json({ message: 'Se ha enviado un enlace de recuperación a tu correo (simulado).' });
+  } catch (err) {
+    console.error('Error en /resetpassword:', err);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+router.post('/new-password', async (req, res) => {
+  const { token, password } = req.body;
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Hash de la nueva contraseña
+    const bcrypt = require('bcryptjs');
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    await pool.query(
+      'UPDATE users SET password = $1 WHERE id = $2',
+      [hashedPassword, decoded.userId]
+    );
+
+    res.json({ message: 'Contraseña actualizada' });
+  } catch (err) {
+    console.error('Error en /new-password:', err);
+    res.status(400).json({ error: 'Token inválido o expirado' });
+  }
+});
+
+
 module.exports = router;

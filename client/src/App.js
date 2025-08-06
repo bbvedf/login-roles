@@ -6,7 +6,8 @@ import WelcomePage from './components/WelcomePage';
 import Register from './components/Register';
 import Dashboard from './components/Dashboard';
 import PrivateRoute from './components/PrivateRoute';
-
+import ResetPassword from './components/ResetPassword';
+import NewPassword from './components/NewPassword';
 
 function App() {
   const { user, isLoggedIn } = useContext(AuthContext);
@@ -15,6 +16,8 @@ function App() {
     <Routes>
       <Route path="/welcome" element={<WelcomePage />} />
       <Route path="/login" element={!isLoggedIn ? <Login /> : <Navigate to="/dashboard" />} />
+      <Route path="/reset-password" element={<ResetPassword />} />
+      <Route path="/new-password/:token" element={<NewPassword />} />
       <Route path="/register" element={!isLoggedIn ? <Register /> : <Navigate to="/dashboard" />} />
       <Route path="/dashboard" element={
         <PrivateRoute allowedRoles={['approved']}>

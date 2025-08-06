@@ -135,6 +135,10 @@ const Login = () => {
           ¿No tienes cuenta? <a href="/register">Regístrate</a>
         </p>
 
+        <p className={styles.footer}>
+          ¿Olvidaste tu contraseña? Recupérala <a href="/reset-password">aquí</a>
+        </p>
+ 
 
       </div>
     </div>
@@ -144,31 +148,3 @@ const Login = () => {
 export default Login;
 
 
-
-
-/* 
-        <div className={styles.googleButton}>
-          <GoogleLogin
-            onSuccess={async (credentialResponse) => {
-              try {
-                const response = await fetch('http://localhost:5000/api/auth/google', {
-                  method: 'POST',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ token: credentialResponse.credential }),
-                });
-                const data = await response.json();
-                if (response.ok) {
-                  localStorage.setItem('token', data.token);
-                  navigate(data.user.isApproved ? '/dashboard' : '/welcome');
-                }
-              } catch (error) {
-                setError('Error al autenticar con Google');
-              }
-            }}
-            onError={() => {
-              setError('Error al autenticar con Google');
-            }}
-          />
-        </div>
-
-*/
