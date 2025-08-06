@@ -160,7 +160,8 @@ router.post('/reset-password', async (req, res) => {
             { expiresIn: '15m' }
         );
 
-        const resetLink = `http://localhost:3000/new-password/${resetToken}`;
+        const FRONTEND_URL = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const resetLink = `${FRONTEND_URL}/new-password/${resetToken}`;
 
         await sendPasswordResetEmail(email, resetLink);
 
