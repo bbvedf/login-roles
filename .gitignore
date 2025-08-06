@@ -17,3 +17,8 @@ Thumbs.db
 # Misc
 .vscode/
 .idea/
+
+# Certbot / Let's Encrypt
+/certbot-data/
+/nginx/certs/
+/nginx/certbot-log/
