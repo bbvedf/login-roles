@@ -34,5 +34,31 @@ services:
       - ./server:/app
     command: npm start
 
+  frontend:
+    build:
+      context: ./client
+    ports:
+      - "3000:3000"
+    env_file:
+      - .env
+    volumes:
+      - ./client:/app
+    command: npm start
+
+  nginx:
+    image: nginx:latest
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d
+      - ./certbot-data/etc/letsencrypt:/etc/letsencrypt:ro
+    depends_on:
+      - backend
+      - frontend
+
 volumes:
   postgres_data:
+
+

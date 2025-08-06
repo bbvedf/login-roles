@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 import { GoogleLogin } from '@react-oauth/google';
+import googleLogo from '../assets/google-icon.svg';
 import { API_BASE_URL } from '../config';
 
 const Login = () => {
@@ -129,6 +130,17 @@ const Login = () => {
             onError={() => {
               setError('Error al autenticar con Google');
             }}
+            useOneTap={false}
+            render={({ onClick }) => (
+              <button onClick={onClick} className={styles.googleCustomButton}>
+                <img
+                  src={googleLogo}
+                  alt="Google"
+                  className={styles.googleIcon}
+                />
+                <span className={styles.googleText}>Iniciar sesión con Google</span>
+              </button>
+            )}
           />
         </div>
 
@@ -139,7 +151,7 @@ const Login = () => {
         <p className={styles.footer}>
           ¿Olvidaste tu contraseña? Recupérala <a href="/reset-password">aquí</a>
         </p>
- 
+
 
       </div>
     </div>
