@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './ResetPassword.module.css';
+import { API_BASE_URL } from '../config';
 
 export default function ResetPassword() {
     const [email, setEmail] = useState('');
@@ -13,7 +14,7 @@ export default function ResetPassword() {
         e.preventDefault();
 
         try {
-            const res = await fetch('http://localhost:5000/api/auth/reset-password', {
+            const res = await fetch(`${API_BASE_URL}/api/auth/reset-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email })
@@ -56,8 +57,8 @@ export default function ResetPassword() {
             ) : (
                 <div className={styles.form}>
                     <p className={styles.success}>{message}</p>
-                    <br/>
-                    <br/>                    
+                    <br />
+                    <br />
                     <span> Revisa tu correo para continuar con el proceso de recuperación de contraseña.</span>
                     <p></p>
                     <button onClick={() => navigate('/')} className={styles.button}>

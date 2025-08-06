@@ -1,6 +1,7 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import styles from './NewPassword.module.css';
+import { API_BASE_URL } from '../config';
 
 export default function NewPassword() {
     const { token } = useParams();
@@ -19,7 +20,7 @@ export default function NewPassword() {
         }
 
         try {
-            const res = await fetch('http://localhost:5000/api/auth/new-password', {
+            const res = await fetch(`${API_BASE_URL}/api/auth/new-password`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token, password })

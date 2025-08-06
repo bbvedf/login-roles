@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Login.module.css';
 import { GoogleLogin } from '@react-oauth/google';
+import { API_BASE_URL } from '../config';
 
 const Login = () => {
   const [form, setForm] = useState({ email: '', password: '' });
@@ -12,7 +13,7 @@ const Login = () => {
     e.preventDefault();
 
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(form),
@@ -96,7 +97,7 @@ const Login = () => {
           <GoogleLogin
             onSuccess={async (credentialResponse) => {
               try {
-                const response = await fetch('http://localhost:5000/api/auth/google', {
+                const response = await fetch(`${API_BASE_URL}/api/auth/google`, {
                   method: 'POST',
                   headers: { 'Content-Type': 'application/json' },
                   body: JSON.stringify({ token: credentialResponse.credential }),

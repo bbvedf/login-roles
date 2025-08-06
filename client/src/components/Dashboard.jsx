@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import styles from './Dashboard.module.css';
+import { API_BASE_URL } from '../config';
 
 
 function Dashboard() {
@@ -30,7 +31,7 @@ function Dashboard() {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const response = await fetch('http://localhost:5000/api/admin/users', {
+      const response = await fetch(`${API_BASE_URL}/api/admin/users`, {
         headers: {
           'Authorization': `Bearer ${localStorage.getItem('token')}`
         }
@@ -66,7 +67,7 @@ function Dashboard() {
         fetchOptions.body = JSON.stringify(data);
       }
 
-      const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, fetchOptions);
+      const response = await fetch(`${API_BASE_URL}/api/admin/users/${userId}`, fetchOptions);
 
       if (response.ok) {
         fetchUsers();

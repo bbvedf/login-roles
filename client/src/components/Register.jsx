@@ -2,8 +2,9 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import styles from './Register.module.css';
+import { API_BASE_URL } from '../config';
 
-const API_URL = 'http://localhost:5000/api/auth';
+const API_URL = `${API_BASE_URL}/api/auth`;
 
 function Register() {
   const navigate = useNavigate();

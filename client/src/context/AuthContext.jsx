@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../src/config';
 
 // 1. Añade error al contexto
 export const AuthContext = createContext({
@@ -36,7 +37,7 @@ export const AuthProvider = ({ children }) => {
       }
 
       try {
-        const response = await fetch('http://localhost:5000/api/auth/verify', {
+        const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
           headers: { 'Authorization': `Bearer ${token}` }
         });
 
@@ -64,7 +65,7 @@ export const AuthProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://localhost:5000/api/auth/login', {
+      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
@@ -100,7 +101,7 @@ export const AuthProvider = ({ children }) => {
 
     try {
       if (token) {
-        await fetch('http://localhost:5000/api/auth/logout', {
+        await fetch(`${API_BASE_URL}/api/auth/logout`, {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`
