@@ -56,6 +56,10 @@ export default function ResetPassword() {
             ) : (
                 <div className={styles.form}>
                     <p className={styles.success}>{message}</p>
+                    <br/>
+                    <br/>                    
+                    <span> Revisa tu correo para continuar con el proceso de recuperación de contraseña.</span>
+                    <p></p>
                     <button onClick={() => navigate('/')} className={styles.button}>
                         Volver al inicio
                     </button>
