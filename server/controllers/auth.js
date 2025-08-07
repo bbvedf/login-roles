@@ -1,50 +1,54 @@
+// Lógica de negocio: qué sucede cuando alguien se registra, inicia sesión, etc.
+
 const pool = require('../db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const { sendNewUserNotificationEmail } = require('../utils/emailSender');
+const { OAuth2Client } = require('google-auth-library');
 
 const JWT_SECRET = process.env.JWT_SECRET || 'mi_secreto';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'TU_CLIENT_ID';
+const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
+
+// Generar token JWT
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      userId: user.id,
+      email: user.email,
+      role: user.role,
+      isApproved: user.isApproved
+    },
+    JWT_SECRET,
+    { expiresIn: '1h' }
+  );
+};
 
 exports.register = async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
-    // 1. Verificar si el usuario ya existe
-    const userExists = await pool.query(
-      'SELECT id FROM users WHERE email = $1',
-      [email]
-    );
-
+    const userExists = await pool.query('SELECT id FROM users WHERE email = $1', [email]);
     if (userExists.rows.length > 0) {
       return res.status(400).json({ message: 'El usuario ya existe' });
     }
 
-    // 2. Crear usuario (con role 'basic' por defecto)
     const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await pool.query(
       `INSERT INTO users (username, email, password, is_approved, role)
        VALUES ($1, $2, $3, $4, $5)
        RETURNING id, email, username, is_approved AS "isApproved", role`,
-      [username, email, hashedPassword, false, 'basic'] // is_approved=false, role='basic'
+      [username, email, hashedPassword, false, 'basic']
     );
 
-    // 3. Generar token
-    const token = jwt.sign(
-      {
-        userId: newUser.rows[0].id,
-        email: newUser.rows[0].email,
-        role: newUser.rows[0].role
-      },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    await sendNewUserNotificationEmail({ username, email });
 
     res.status(201).json({
       message: 'Registro exitoso. Espera aprobación.',
       email: newUser.rows[0].email,
       username: newUser.rows[0].username,
-      requiresApproval: true // Nuevo campo clave
+      requiresApproval: true
     });
-
   } catch (error) {
     console.error('Error en registro:', error);
     res.status(500).json({ message: 'Error en el servidor' });
@@ -55,17 +59,9 @@ exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    // 1. Buscar usuario (incluyendo role desde users)
     const user = await pool.query(
-      `SELECT 
-        id, 
-        email, 
-        username, 
-        password,
-        is_approved AS "isApproved",
-        role
-       FROM users 
-       WHERE email = $1`,
+      `SELECT id, email, username, password, is_approved AS "isApproved", role
+       FROM users WHERE email = $1`,
       [email]
     );
 
@@ -73,14 +69,12 @@ exports.login = async (req, res) => {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // 2. Verificar contraseña
     const validPassword = await bcrypt.compare(password, user.rows[0].password);
     if (!validPassword) {
       return res.status(401).json({ error: 'Credenciales inválidas' });
     }
 
-    // 3. Verificar aprobación
-    if (!user.rows[0].is_approved) {
+    if (!user.rows[0].isApproved) {
       return res.status(403).json({
         requiresApproval: true,
         email: user.rows[0].email,
@@ -88,16 +82,7 @@ exports.login = async (req, res) => {
       });
     }
 
-    // 4. Generar token
-    const token = jwt.sign(
-      {
-        userId: user.rows[0].id,
-        email: user.rows[0].email,
-        role: user.rows[0].role
-      },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const token = generateToken(user.rows[0]);
 
     res.json({
       success: true,
@@ -109,18 +94,11 @@ exports.login = async (req, res) => {
         role: user.rows[0].role
       }
     });
-
   } catch (error) {
     console.error('Error en login:', error);
     res.status(500).json({ error: 'Error en el servidor' });
   }
 };
-
-// Login con Google
-const { OAuth2Client } = require('google-auth-library');
-const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || 'TU_CLIENT_ID';
-const googleClient = new OAuth2Client(GOOGLE_CLIENT_ID);
-
 
 exports.googleLogin = async (req, res) => {
   const { token } = req.body;
@@ -135,7 +113,6 @@ exports.googleLogin = async (req, res) => {
     const email = payload.email;
     const name = payload.name || email.split('@')[0];
 
-    // Buscar usuario
     let userResult = await pool.query(
       `SELECT id, email, username, is_approved AS "isApproved", role 
        FROM users WHERE email = $1`,
@@ -145,7 +122,6 @@ exports.googleLogin = async (req, res) => {
     let user;
 
     if (userResult.rows.length === 0) {
-      // Si no existe, lo creamos con is_approved = false
       const insertResult = await pool.query(
         `INSERT INTO users (username, email, password, role, is_approved)
          VALUES ($1, $2, '', 'basic', false)
@@ -154,11 +130,11 @@ exports.googleLogin = async (req, res) => {
       );
 
       user = insertResult.rows[0];
+      await sendNewUserNotificationEmail({ username: name, email });
     } else {
       user = userResult.rows[0];
     }
 
-    // Si no está aprobado, respondemos sin token
     if (!user.isApproved) {
       return res.status(403).json({
         requiresApproval: true,
@@ -171,17 +147,7 @@ exports.googleLogin = async (req, res) => {
       });
     }
 
-    // Generar token si está aprobado
-    const jwtToken = jwt.sign(
-      {
-        userId: user.id,
-        email: user.email,
-        role: user.role,
-        isApproved: user.isApproved
-      },
-      JWT_SECRET,
-      { expiresIn: '1h' }
-    );
+    const jwtToken = generateToken(user);
 
     res.json({
       success: true,
@@ -193,7 +159,6 @@ exports.googleLogin = async (req, res) => {
         role: user.role
       }
     });
-
   } catch (error) {
     console.error('Error en login con Google:', error);
     res.status(401).json({ error: 'Token de Google inválido' });

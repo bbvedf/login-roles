@@ -3,6 +3,8 @@ const { Router } = express;
 const router = Router();
 const pool = require('../db');
 const { verifyToken, isAdmin } = require('../middleware/authMiddleware');
+const { sendUserApprovedEmail, sendUserRejectedEmail } = require('../utils/emailSender');
+
 
 /**
  * @route GET /api/admin/users
@@ -36,17 +38,40 @@ router.get('/users', verifyToken, isAdmin, async (req, res) => {
  */
 router.patch('/users/:id', verifyToken, isAdmin, async (req, res) => {
     const { id } = req.params;
-    const { role, isApproved } = req.body;
+    const { role, isApproved } = req.body; // Ojo: "isApproved" (en DB) vs "isApproved" (body)
 
     try {
+        // 1. Obtenemos el usuario actual (necesitamos su email y estado de aprobación)
+        const currentUser = await pool.query(
+            'SELECT email, is_approved FROM users WHERE id = $1',
+            [id]
+        );
+
+        if (currentUser.rows.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        const { email, is_approved: currentApprovalStatus } = currentUser.rows[0];
+
+        // 2. Actualizamos el usuario
         await pool.query(
             `UPDATE users 
-        SET 
-            is_approved = COALESCE($1, is_approved),
-            role = COALESCE($2, role)
-        WHERE id = $3`,
+             SET 
+                is_approved = COALESCE($1, is_approved),
+                role = COALESCE($2, role)
+             WHERE id = $3`,
             [isApproved, role, id]
         );
+
+        // 3. Verificamos si isApproved cambió (solo si se envió en el body)
+        if (isApproved !== undefined && isApproved !== currentApprovalStatus) {
+            if (isApproved) {
+                await sendUserApprovedEmail(email); // Email de aprobación
+            } else {
+                await sendUserRejectedEmail(email); // Email de cancelación
+            }
+        }
+
         res.status(200).json({ success: true });
     } catch (error) {
         console.error('Error al actualizar usuario:', error);
