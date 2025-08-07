@@ -1,34 +1,51 @@
 #!/bin/bash
 
-# CONFIGURACIÓN
-APP_DIR="compra-venta-app"
+# Archivo de backup como argumento
+BACKUP_FILE="$1"
+RESTORE_MODE="$2"  # Puede ser "identico" o "incremental"
+
+if [ -z "$BACKUP_FILE" ]; then
+  echo "❌ Debes pasar el archivo de backup como primer argumento."
+  echo "Uso: sudo ./mnt_restore.sh backup_total_20250807_2130.tar.gz [identico|incremental]"
+  echo " - identico: borra archivos extra en la carpeta destino (default)"
+  echo " - incremental: solo actualiza/agrega archivos, sin borrar extras"
+  exit 1
+fi
+
+# Por defecto modo identico
+if [ -z "$RESTORE_MODE" ]; then
+  RESTORE_MODE="identico"
+fi
+
+TMP_DIR="restore_tmp"
 VOLUME_NAME="compra-venta-app_postgres_data"
-DATE=$(date +"%Y%m%d_%H%M")
-TMP_BACKUP_DIR="tmp_backup_$DATE"
-FINAL_BACKUP_FILE="backup_total_${DATE}.tar.gz"
 
-echo "📦 Iniciando backup completo..."
+echo "📦 Restaurando desde $BACKUP_FILE..."
+echo "⚙️ Modo restore: $RESTORE_MODE"
 
-# 1. Crear carpeta temporal
-mkdir $TMP_BACKUP_DIR
+# 1. Extraer backup
+mkdir -p $TMP_DIR
+tar -xzvf $BACKUP_FILE -C $TMP_DIR
 
-# 2. Copiar archivos del proyecto (excluyendo node_modules, .git, etc.)
-echo "📁 Copiando archivos del proyecto..."
-rsync -a --exclude=node_modules --exclude=.git --exclude=$TMP_BACKUP_DIR $APP_DIR $TMP_BACKUP_DIR/app
+# 2. Restaurar archivos del proyecto
+echo "📁 Restaurando archivos del proyecto..."
 
-# 3. Backup del volumen de Docker
-echo "🛢️ Haciendo backup del volumen Docker: $VOLUME_NAME"
+if [ "$RESTORE_MODE" = "identico" ]; then
+  rsync -a --delete $TMP_DIR/*/app/ ./compra-venta-app/
+else
+  rsync -a $TMP_DIR/*/app/ ./compra-venta-app/
+fi
+
+# 3. Restaurar volumen Docker
+echo "🛢️ Restaurando volumen Docker: $VOLUME_NAME"
+docker volume create $VOLUME_NAME
 docker run --rm \
   -v $VOLUME_NAME:/volume \
-  -v $(pwd)/$TMP_BACKUP_DIR:/backup \
+  -v $(pwd)/$TMP_DIR:/backup \
   alpine \
-  tar -czvf /backup/volume_backup.tar.gz -C /volume .
+  tar -xzvf /backup/volume_backup.tar.gz -C /volume
 
-# 4. Comprimir todo en un único archivo
-echo "📦 Empaquetando todo en $FINAL_BACKUP_FILE"
-tar -czvf $FINAL_BACKUP_FILE $TMP_BACKUP_DIR
+# 4. Limpiar
+rm -rf $TMP_DIR
 
-# 5. Limpiar
-rm -rf $TMP_BACKUP_DIR
-
-echo "✅ Backup completado: $(pwd)/$FINAL_BACKUP_FILE"
+echo "✅ Restauración completada"
