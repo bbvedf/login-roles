@@ -84,6 +84,42 @@ docker-compose -f docker-compose.prod.yml up --build
 
 ---
 
+🧰 Backup y Restore
+La aplicación incluye scripts para realizar copias de seguridad completas del proyecto, incluyendo archivos del código y la base de datos Postgres almacenada en volúmenes de Docker.
+
+🔄 Scripts disponibles
+mnt_backup.sh → Crea un archivo .tar.gz con:
+
+- Archivos del proyecto (excluyendo node_modules, .git, etc.)
+
+- Volumen de Docker (compra-venta-app_postgres_data) comprimido
+
+mnt_restore.sh → Restaura:
+
+- Todos los archivos del proyecto a su ubicación original
+
+- El volumen de Docker a partir del backup incluido
+
+
+📦 Backup
+```bash
+./mnt_backup.sh
+````
+Esto generará un archivo como:
+
+```text
+backup_total_20250807_2130.tar.gz
+```
+
+🔁 Restore
+```bash
+./mnt_restore.sh backup_total_20250807_2130.tar.gz
+```
+🛑 Advertencia: El restore sobrescribe archivos del proyecto y recrea el volumen de Docker si no existe. Asegúrate de no tener cambios pendientes o contenedores corriendo antes de restaurar.
+
+---
+
+
 ## 🔐 Endpoints Clave
 
 | Método HTTP | Endpoint               | Descripción                           |
