@@ -2,7 +2,7 @@
 ![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react)  
 ![Node.js](https://img.shields.io/badge/Node.js-16+-339933?logo=node.js)  
 ![JWT](https://img.shields.io/badge/JWT-Authentication-000000?logo=json-web-tokens)  
-![React Icons](https://react-icons.github.io/react-icons/)
+![React Icons](https://img.shields.io/badge/React_Icons-5.5.0-F7DF1E?logo=react&logoColor=white)
 
 ## 📌 Descripción  
 Sistema completo de autenticación con registro, login y rutas protegidas.  
