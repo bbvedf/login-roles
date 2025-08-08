@@ -1,8 +1,11 @@
 import { useState } from 'react';
+import { useContext } from 'react';
+import { AuthContext } from '../context/AuthContext';
 import styles from './ThemeMenu.module.css';
 import { FiSun, FiMoon, FiLogOut } from 'react-icons/fi';
 
 const ThemeMenu = ({ theme, setTheme, onLogout }) => {
+    const { user, logout } = useContext(AuthContext);
     const [isOpen, setIsOpen] = useState(false);
 
     return (
@@ -36,15 +39,15 @@ const ThemeMenu = ({ theme, setTheme, onLogout }) => {
                         )}
                     </button>
 
-                    <button
-                        className={styles.menuItem}
-                        onClick={() => {
-                            onLogout();
+                    {user && ( // Mostrar sólo si hay usuario logueado
+                        <button className={styles.menuItem} onClick={() => {
+                            logout();
                             setIsOpen(false);
-                        }}
-                    >
-                        <FiLogOut size={16} className={styles.icon} /> Cerrar Sesión
-                    </button>
+                        }}>
+                            <FiLogOut className={styles.icon} />
+                            Cerrar Sesión
+                        </button>
+                    )}
                 </div>
             )}
         </div>
