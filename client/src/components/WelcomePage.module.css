@@ -3,42 +3,49 @@
   margin: 2rem auto;
   padding: 2rem;
   text-align: center;
-  background: #fff;
+  background: var(--color-card-bg);
   border-radius: 8px;
   box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+  color: var(--color-text);
 }
 
 .message {
   font-size: 1.2rem;
   margin: 1.5rem 0;
-  color: #333;
+  color: var(--color-text);
 }
 
 .instructions {
   font-size: 1.1rem;
   line-height: 1.6;
   margin-bottom: 2rem;
+  color: var(--color-text);
 }
 
 .contactLink {
   display: inline-block;
   margin-top: 0.5rem;
-  color: #2563eb;
+  color: var(--color-link);
   font-weight: 500;
   text-decoration: none;
+}
+
+.contactLink:hover {
+  text-decoration: underline;
+  opacity: 0.85;
 }
 
 .note {
   margin-top: 2rem;
   padding-top: 1rem;
-  border-top: 1px solid #eee;
-  color: #666;
+  border-top: 1px solid var(--color-input-border);
+  color: var(--color-muted);
 }
 
 .logoutButton {
   margin-top: 2rem;
   padding: 0.5rem 1rem;
-  background-color: #ff4444;
+  background-color: #ff4444; /* Mantenido fijo para importancia */
   color: white;
   border: none;
   border-radius: 4px;
@@ -47,5 +54,5 @@
 }
 
 .logoutButton:hover {
-  background-color: #cc0000;
+  background-color: #cc0000; /* Mantenido fijo para importancia */
 }

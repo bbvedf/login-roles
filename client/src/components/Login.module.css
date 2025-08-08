@@ -1,4 +1,3 @@
-/* Estilos específicos SOLO para el componente Login */
 .container {
   min-height: 100vh;
   display: flex;
@@ -6,16 +5,17 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background-color: #f8f9fa;
+  background-color: var(--color-bg);
 }
 
 .form {
   width: 100%;
   max-width: 400px;
   padding: 2rem;
-  background: white;
+  background: var(--color-card-bg);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: var(--color-text);
 }
 
 .inputGroup {
@@ -26,7 +26,9 @@
   width: 100%;
   padding: 0.75rem;
   margin-top: 0.25rem;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--color-input-border);
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
   border-radius: 4px;
   box-sizing: border-box;
 }
@@ -34,8 +36,8 @@
 .button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #2563eb;
-  color: white;
+  background-color: var(--color-button-bg);
+  color: var(--color-button-text);
   border: none;
   border-radius: 4px;
   cursor: pointer;
@@ -43,7 +45,7 @@
 }
 
 .button:hover {
-  background-color: #1a56d6;
+  background-color: var(--color-button-bg-hover);
 }
 
 .googleButton {
@@ -53,16 +55,15 @@
   margin-top: 1rem;
 }
 
-/* Botón personalizado de Google */
 .googleCustomButton {
   display: flex;
   align-items: center;
   justify-content: center;
   width: 100%;
   padding: 0.75rem;
-  background-color: white;
-  color: #444;
-  border: 1px solid #ccc;
+  background-color: var(--color-card-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-input-border);
   border-radius: 4px;
   cursor: pointer;
   font-weight: 500;
@@ -72,16 +73,14 @@
 }
 
 .googleCustomButton:hover {
-  background-color: #f5f5f5;
+  background-color: var(--color-input-bg);
 }
 
-/* Icono de Google */
 .googleIcon {
   height: 20px;
   margin-right: 8px;
 }
 
-/* Texto al lado del icono */
 .googleText {
   white-space: nowrap;
 }
@@ -90,14 +89,14 @@
   display: flex;
   align-items: center;
   margin: 1.5rem 0;
-  color: #6b7280;
+  color: var(--color-muted);
 }
 
 .separator::before,
 .separator::after {
   content: "";
   flex: 1;
-  border-bottom: 1px solid #e5e7eb;
+  border-bottom: 1px solid var(--color-input-border);
 }
 
 .separator::before {
@@ -109,9 +108,8 @@
 }
 
 .error {
-  color: #ff4444;
+  color: #ff4444; /* 🔴 Error se queda fijo para que sea visible en ambos temas */
   margin-bottom: 1rem;
   border-radius: 4px;
   text-align: center;
 }
-

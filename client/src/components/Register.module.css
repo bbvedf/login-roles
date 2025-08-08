@@ -5,22 +5,23 @@
   align-items: center;
   justify-content: center;
   padding: 1rem;
-  background-color: #f8f9fa;
+  background-color: var(--color-bg);
 }
 
 .form {
   width: 100%;
   max-width: 400px;
   padding: 2rem;
-  background: white;
+  background: var(--color-card-bg);
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  color: var(--color-text);
 }
 
 .title {
   margin-bottom: 1.5rem;
   text-align: center;
-  color: #1a365d;
+  color: var(--color-link); /* Usamos el color de link para el título */
 }
 
 .input {
@@ -28,21 +29,23 @@
   padding: 0.75rem;
   margin-top: 0.25rem;
   margin-bottom: 1rem;
-  border: 1px solid #ced4da;
+  border: 1px solid var(--color-input-border);
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
   border-radius: 4px;
-  box-sizing: border-box;   
+  box-sizing: border-box;
 }
 
 .input:focus {
   outline: none;
-  border-color: #4299e1;
+  border-color: var(--color-link); /* Mismo color que los links */
 }
 
 .button {
   width: 100%;
   padding: 0.75rem;
-  background-color: #2b6cb0;
-  color: white;
+  background-color: var(--color-button-bg);
+  color: var(--color-button-text);
   border: none;
   border-radius: 4px;
   font-weight: 500;
@@ -51,7 +54,7 @@
 }
 
 .button:hover {
-  background-color: #2c5282;
+  background-color: var(--color-button-bg-hover);
 }
 
 .message {
@@ -63,24 +66,25 @@
 
 .error {
   composes: message;
-  background-color: #fff5f5;
-  color: #c53030;
+  background-color: rgba(239, 68, 68, 0.1); /* Rojo con transparencia */
+  color: #ef4444; /* Mantenido fijo para mejor contraste */
 }
 
 .success {
   composes: message;
-  background-color: #f0fff4;
-  color: #2f855a;
+  background-color: rgba(16, 185, 129, 0.1); /* Verde con transparencia */
+  color: #10b981; /* Mantenido fijo para mejor contraste */
 }
 
 .link {
   display: block;
   margin-top: 1.5rem;
   text-align: center;
-  color: #4299e1;
+  color: var(--color-link);
   text-decoration: none;
 }
 
 .link:hover {
   text-decoration: underline;
+  opacity: 0.85;
 }

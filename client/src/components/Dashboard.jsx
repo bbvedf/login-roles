@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
 import styles from './Dashboard.module.css';
 import { API_BASE_URL } from '../config';
+import ThemeMenu from './ThemeMenu';
 
 
 function Dashboard() {
@@ -11,6 +12,15 @@ function Dashboard() {
   const [activeTab, setActiveTab] = useState('inicio');
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [theme, setTheme] = useState(() => {
+    return localStorage.getItem('theme') || 'light';
+  });
+
+  useEffect(() => {
+    document.body.classList.remove('theme-light', 'theme-dark');
+    document.body.classList.add(`theme-${theme}`);
+    localStorage.setItem('theme', theme);
+  }, [theme]);
 
   useEffect(() => {
     if (!user) {
@@ -105,9 +115,11 @@ function Dashboard() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h2 className={styles.title}>Panel de Administración</h2>
-        <button onClick={logout} className={styles.logoutButton}>
-          Cerrar Sesión
-        </button>
+        <ThemeMenu
+          theme={theme}
+          setTheme={setTheme}
+          onLogout={logout} // Pasamos la función logout como prop
+        />
         {showDeleteModal && (
           <div className={styles.modalOverlay}>
             <div className={styles.modal}>
