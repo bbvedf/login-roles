@@ -1,5 +1,3 @@
-#version: "3.8"
-
 services:
   postgres:
     image: postgres:15
@@ -9,7 +7,7 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - login_roles_postgres_data:/var/lib/postgresql/data
 
   pgadmin:
     image: dpage/pgadmin4
@@ -30,8 +28,8 @@ services:
       - .env
     depends_on:
       - postgres
-    volumes:
-      - ./server:/app
+    #volumes:
+      #- ./server:/app
     command: npm start
 
   frontend:
@@ -41,8 +39,8 @@ services:
       - "3000:3000"
     env_file:
       - .env
-    volumes:
-      - ./client:/app
+    #volumes:
+      #- ./client:/app
     command: npm start
 
   nginx:
@@ -59,6 +57,4 @@ services:
       - frontend
 
 volumes:
-  postgres_data:
-
-
+  login_roles_postgres_data:

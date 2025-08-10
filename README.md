@@ -1,4 +1,4 @@
-# 🛒 Compra-Venta App - Sistema de Autenticación  
+# 🛒 Login-Roles App - Sistema de Autenticación  
 ![React](https://img.shields.io/badge/React-18+-61DAFB?logo=react)  
 ![Node.js](https://img.shields.io/badge/Node.js-16+-339933?logo=node.js)  
 ![JWT](https://img.shields.io/badge/JWT-Authentication-000000?logo=json-web-tokens)  
@@ -177,8 +177,7 @@ npm run dev
 
 ## 📝 Próximas Mejoras
 
-- Panel de administración  
-- Recuperación de contraseña  
+- Panel de administración mejorado  
 - Tests E2E con Cypress  
 
 ---
