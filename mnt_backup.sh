@@ -18,7 +18,7 @@ if [ -z "$RESTORE_MODE" ]; then
 fi
 
 TMP_DIR="restore_tmp"
-VOLUME_NAME="compra-venta-app_postgres_data"
+VOLUME_NAME="login-roles_postgres_data"
 
 echo "📦 Restaurando desde $BACKUP_FILE..."
 echo "⚙️ Modo restore: $RESTORE_MODE"
@@ -31,9 +31,9 @@ tar -xzvf $BACKUP_FILE -C $TMP_DIR
 echo "📁 Restaurando archivos del proyecto..."
 
 if [ "$RESTORE_MODE" = "identico" ]; then
-  rsync -a --delete $TMP_DIR/*/app/ ./compra-venta-app/
+  rsync -a --delete $TMP_DIR/*/app/ ./login-roles/
 else
-  rsync -a $TMP_DIR/*/app/ ./compra-venta-app/
+  rsync -a $TMP_DIR/*/app/ ./login-roles/
 fi
 
 # 3. Restaurar volumen Docker

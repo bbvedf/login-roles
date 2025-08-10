@@ -31,7 +31,7 @@ Sistema completo de autenticación con registro, login y rutas protegidas.
 
 ## 🏗️ Estructura del Proyecto  
 ```
-compra-venta-app/
+login-roles/
 ├── client/               # Frontend React
 │   ├── src/
 │   │   ├── components/   # Componentes reutilizables
@@ -52,8 +52,8 @@ compra-venta-app/
 
 ### 1. Clonar y configurar:
 ```bash
-git clone https://github.com/tu-usuario/compra-venta-app.git
-cd compra-venta-app
+git clone https://github.com/tu-usuario/login-roles.git
+cd login-roles
 cp .env.example .env  # Configurar variables
 ```
 
@@ -95,7 +95,7 @@ mnt_backup.sh → Crea un archivo .tar.gz con:
 
 - Archivos del proyecto (excluyendo node_modules, .git, etc.)
 
-- Volumen de Docker (compra-venta-app_postgres_data) comprimido
+- Volumen de Docker (login-roles_postgres_data) comprimido
 
 mnt_restore.sh → Restaura:
 
@@ -211,4 +211,4 @@ npm run dev
 ---
 
 🔧 ¿Problemas?  
-Revisa los [issues](https://github.com/bbvedf/compra-venta-app/issues) del repositorio.
+Revisa los [issues](https://github.com/bbvedf/login-roles/issues) del repositorio.

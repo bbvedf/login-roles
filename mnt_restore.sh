@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Configuración
-APP_DIR="compra-venta-app"
-VOLUME_NAME="compra-venta-app_postgres_data"
+APP_DIR="login-roles"
+VOLUME_NAME="login-roles_postgres_data"
 TMP_DIR="restore_tmp"
 
 # Archivo de backup como argumento
